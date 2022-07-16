@@ -14,7 +14,7 @@ module Outscraper
     end
 
     def google_search(query, pages_per_query: 1, uule: '', language: 'en', region: nil)
-      response = self.class.get("google-search-v2", 'query': {
+      response = self.class.get("/google-search-v2", 'query': {
         query: query,
         pagesPerQuery: pages_per_query,
         uule: uule,
