@@ -49,5 +49,12 @@ module Outscraper
         async: false,
       }).parsed_response['data']
     end
+
+    def phones_enricher(query)
+      response = self.class.get("/phones-enricher", 'query': {
+        query: query,
+        async: false,
+      }).parsed_response['data']
+    end
   end
 end
