@@ -26,14 +26,18 @@ client = Outscraper::Client.new('SECRET_API_KEY')
 
 ## Usage
 
-### Scrape Google Maps (Places)
-
 ```ruby
 # Search for businesses in specific locations:
 result = client.google_maps_search_v2('restaurants brooklyn usa', limit: 20, language: 'en', region: 'us')
 
 # Get data of the specific place by id
 result = client.google_maps_search_v2('ChIJrc9T9fpYwokRdvjYRHT8nI4', language: 'en')
+
+# Get reviews of the specific place by id
+result = client.google_maps_reviews_v3('ChIJrc9T9fpYwokRdvjYRHT8nI4', reviews_limit: 20, language: 'en')
+
+# Search contacts from website
+result = client.emails_and_contacts('outscraper.com')
 ```
 
 ## Development
