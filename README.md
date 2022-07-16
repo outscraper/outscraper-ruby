@@ -1,22 +1,40 @@
-# Outscraper
+# Outscraper Ruby Library
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/outscraper`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+The library provides convenient access to the [Outscraper API](https://app.outscraper.com/api-docs) from applications written in the Ruby language. Allows using [Outscraper's services](https://outscraper.com/services/) from your code.
 
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add outscraper
+```bash
+bundle add outscraper
+```
 
 If bundler is not being used to manage dependencies, install the gem by executing:
+```bash
+gem install outscraper
+```
 
-    $ gem install outscraper
+[Link to the Ruby package page](https://rubygems.org/gems/outscraper)
+
+## Initialization
+```ruby
+require 'Outscraper'
+
+client = Outscraper::Client.new('SECRET_API_KEY')
+```
+[Link to the profile page to create the API key](https://app.outscraper.com/profile)
 
 ## Usage
 
-TODO: Write usage instructions here
+### Scrape Google Maps (Places)
+
+```ruby
+# Search for businesses in specific locations:
+result = client.google_maps_search_v2('restaurants brooklyn usa', limit: 20, language: 'en', region: 'us')
+
+# Get data of the specific place by id
+result = client.google_maps_search_v2('ChIJrc9T9fpYwokRdvjYRHT8nI4', language: 'en')
+```
 
 ## Development
 
@@ -27,11 +45,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/outscraper/outscraper-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/outscraper/outscraper-ruby/blob/master/CODE_OF_CONDUCT.md).
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Outscraper project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/outscraper/outscraper-ruby/blob/master/CODE_OF_CONDUCT.md).
