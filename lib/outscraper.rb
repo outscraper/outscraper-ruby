@@ -13,6 +13,17 @@ module Outscraper
       self.class.headers 'X-API-KEY' => api_key
     end
 
+    def google_search(query, pages_per_query: 1, uule: '', language: 'en', region: nil)
+      response = self.class.get("google-search-v2", 'query': {
+        query: query,
+        pagesPerQuery: pages_per_query,
+        uule: uule,
+        language: language,
+        region: region,
+        async: false,
+      }).parsed_response['data']
+    end
+
     def google_maps_search_v2(query, limit: 20, drop_duplicates: false, language: 'en', region: nil, skip: 0)
       response = self.class.get("/maps/search-v2", 'query': {
         query: query,
