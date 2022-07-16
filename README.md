@@ -40,6 +40,8 @@ result = client.google_maps_reviews_v3('ChIJrc9T9fpYwokRdvjYRHT8nI4', reviews_li
 result = client.emails_and_contacts('outscraper.com')
 ```
 
+[More examples](https://github.com/outscraper/outscraper-ruby/tree/master/examples)
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
