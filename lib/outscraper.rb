@@ -14,17 +14,6 @@ module Outscraper
     end
 
     def google_search(query, pages_per_query: 1, uule: '', language: 'en', region: nil)
-      response = self.class.get("/google-search-v2", 'query': {
-        query: query,
-        pagesPerQuery: pages_per_query,
-        uule: uule,
-        language: language,
-        region: region,
-        async: false,
-      }).parsed_response['data']
-    end
-
-    def google_search_v3(query, pages_per_query: 1, uule: '', language: 'en', region: nil)
       response = self.class.get("/google-search-v3", 'query': {
         query: query,
         pagesPerQuery: pages_per_query,
@@ -35,7 +24,7 @@ module Outscraper
       }).parsed_response['data']
     end
 
-    def google_maps_search_v2(query, limit: 20, drop_duplicates: false, language: 'en', region: nil, skip: 0)
+    def google_maps_search(query, limit: 20, drop_duplicates: false, language: 'en', region: nil, skip: 0)
       response = self.class.get("/maps/search-v2", 'query': {
         query: query,
         limit: limit,
@@ -47,7 +36,7 @@ module Outscraper
       }).parsed_response['data']
     end
 
-    def google_maps_reviews_v3(query, reviews_limit: 10, limit: 1, sort: 'most_relevant', skip: 0, start: 0, cutoff: 0, cutoff_rating: 0, ignore_empty: false, language: 'en', region: nil, reviews_query: nil)
+    def google_maps_reviews(query, reviews_limit: 10, limit: 1, sort: 'most_relevant', skip: 0, start: 0, cutoff: 0, cutoff_rating: 0, ignore_empty: false, language: 'en', region: nil, reviews_query: nil)
       response = self.class.get("/maps/reviews-v3", 'query': {
         query: query,
         reviewsLimit: reviews_limit,
