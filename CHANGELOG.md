@@ -6,4 +6,4 @@
 
 ## [1.0.0] - 2022-07-16
 
-- Use latests versions by default
+- Use the latest versions by default
