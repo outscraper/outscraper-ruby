@@ -10,7 +10,7 @@ module Outscraper
     base_uri 'https://api.app.outscraper.com'
 
     def initialize(api_key)
-      self.class.headers 'X-API-KEY' => api_key
+      self.class.headers 'X-API-KEY' => api_key, 'Accept-Encoding' => 'utf-8'
     end
 
     def google_search(query, pages_per_query: 1, uule: '', language: 'en', region: nil)
