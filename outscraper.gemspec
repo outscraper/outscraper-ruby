@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "The library provides convenient access to the Outscraper API from applications written in the Python language. Allows using Outscraper's services from your code. See https://outscraper.com for details."
   spec.homepage = "https://github.com/outscraper/outscraper-ruby"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
 
   spec.metadata["homepage_uri"] = spec.homepage
