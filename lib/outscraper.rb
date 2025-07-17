@@ -321,5 +321,21 @@ module Outscraper
         async: async_request
       }).parsed_response['data']
     end
+
+    def similarweb(query, fields: '', async_request: false)
+      response = self.class.get('/similarweb', query: {
+        query: query.is_a?(Array) ? query : [query],
+        fields: fields,
+        async: async_request
+      }).parsed_response['data']
+    end
+
+    def company_website_finder(query, fields: '', async_request: false)
+      response = self.class.get('/company-website-finder', query: {
+        query: query.is_a?(Array) ? query : [query],
+        fields: fields,
+        async: async_request
+      }).parsed_response['data']
+    end
   end
 end
