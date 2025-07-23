@@ -321,5 +321,36 @@ module Outscraper
         async: async_request
       }).parsed_response['data']
     end
+
+    def similarweb(query, fields: '', async_request: false)
+      response = self.class.get('/similarweb', query: {
+        query: query.is_a?(Array) ? query : [query],
+        fields: fields,
+        async: async_request
+      }).parsed_response['data']
+    end
+
+    def company_website_finder(query, fields: '', async_request: false)
+      response = self.class.get('/company-website-finder', query: {
+        query: query.is_a?(Array) ? query : [query],
+        fields: fields,
+        async: async_request
+      }).parsed_response['data']
+    end
+
+    def yellowpages_search(query, location: 'New York, NY', limit: 100, region: nil, enrichment: [], fields: '', async_request: false, ui: nil, webhook: nil)
+      enrichment_array = enrichment.is_a?(Array) ? enrichment : [enrichment]
+      response = self.class.get('/yellowpages-search', query: {
+        query: query.is_a?(Array) ? query : [query],
+        location: location,
+        limit: limit,
+        region: region,
+        enrichment: enrichment_array,
+        fields: fields,
+        async: async_request,
+        ui: ui,
+        webhook: webhook
+      }).parsed_response['data']
+    end
   end
 end
