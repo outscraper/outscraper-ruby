@@ -9,6 +9,8 @@ module Outscraper
     include HTTParty
     base_uri 'https://api.app.outscraper.com'
 
+    QUERY_DELIMITER = '    '
+
     def initialize(api_key)
       self.class.headers 'X-API-KEY' => api_key, 'Accept-Encoding' => 'utf-8'
     end
@@ -63,8 +65,7 @@ module Outscraper
 
     def google_maps_directions(origin: '', destination: '', departure_time: nil, finish_time: nil, interval: nil, travel_mode: 'best', language: 'en', region: nil, fields: nil, async_request: true)
       response = self.class.get('/maps/directions', query: {
-        origin: Array(origin),
-        destination: Array(destination),
+        queries: format_queries(queries),
         departure_time: departure_time,
         finish_time: finish_time,
         interval: interval,
@@ -351,6 +352,17 @@ module Outscraper
         ui: ui,
         webhook: webhook
       }).parsed_response['data']
+    end
+
+    private
+
+    def format_queries(queries)
+      queries = Array(queries)
+      if queries.all? { |i| i.is_a?(Array) }
+        queries.map { |pair| pair.join(QUERY_DELIMITER) }
+      else
+        queries
+      end
     end
   end
 end
