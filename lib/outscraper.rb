@@ -122,6 +122,32 @@ module Outscraper
       }).parsed_response['data']
     end
 
+    def contacts_and_leads(
+      query,
+      fields: nil,
+      async_request: true,
+      preferred_contacts: nil,
+      contacts_per_company: 3,
+      emails_per_contact: 1,
+      skip_contacts: 0,
+      general_emails: false,
+      ui: false,
+      webhook: nil
+    )
+      response = self.class.get('/contacts-and-leads', query: {
+        query: query,
+        fields: fields ? Array(fields) : nil,
+        async: ui ? true : async_request,
+        preferred_contacts: preferred_contacts ? Array(preferred_contacts) : nil,
+        contacts_per_company: contacts_per_company,
+        emails_per_contact: emails_per_contact,
+        skip_contacts: skip_contacts,
+        general_emails: general_emails,
+        ui: ui,
+        webhook: webhook
+      }).parsed_response['data']
+    end
+
     def emails_and_contacts(query)
       response = self.class.get("/emails-and-contacts", 'query': {
         query: query,
