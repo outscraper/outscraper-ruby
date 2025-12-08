@@ -4,6 +4,19 @@ require "httparty"
 
 require_relative "outscraper/version"
 
+QUERY_DELIMITER = '    '
+
+def format_direction_queries(q)
+  if q.is_a?(Array) && !q.empty? && q.first.is_a?(Array)
+    return q.map { |pair| pair.join(QUERY_DELIMITER) }
+  end
+
+  return q if q.is_a?(Array)
+
+  [q]
+end
+
+
 module Outscraper
   class Client
     include HTTParty
@@ -61,10 +74,10 @@ module Outscraper
       }).parsed_response['data']
     end
 
-    def google_maps_directions(origin: '', destination: '', departure_time: nil, finish_time: nil, interval: nil, travel_mode: 'best', language: 'en', region: nil, fields: nil, async_request: true)
+    def google_maps_directions(query:, departure_time: nil, finish_time: nil, interval: nil, travel_mode: 'best', language: 'en', region: nil, fields: nil, async_request: true)
+      queries = format_direction_queries(query)
       response = self.class.get('/maps/directions', query: {
-        origin: Array(origin),
-        destination: Array(destination),
+        query: queries,
         departure_time: departure_time,
         finish_time: finish_time,
         interval: interval,
