@@ -459,7 +459,7 @@ module Outscraper
       all_items
     end
 
-    def businessesGetDetails(business_id, fields: nil, async_request: false, ui: false, webhook: nil)
+    def businessesGet(business_id, fields: nil, async_request: false, ui: false, webhook: nil)
       raise ArgumentError, 'business_id is required' if business_id.nil? || business_id.to_s.strip.empty?
 
       fields_param =
