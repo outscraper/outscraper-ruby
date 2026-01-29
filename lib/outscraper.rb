@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "httparty"
+require "cgi"
+require "json"
 
 require_relative "outscraper/version"
 
@@ -390,6 +392,90 @@ module Outscraper
         ui: ui,
         webhook: webhook
       }).parsed_response['data']
+    end
+
+    def postAPIRequest(path, parameters = {})
+      payload = parameters || {}
+
+      response = self.class.post(
+        path,
+        headers: { 'Content-Type' => 'application/json' },
+        body: payload.to_json
+      ).parsed_response
+
+      response.is_a?(Hash) && response.key?('data') ? response['data'] : response
+    end
+
+    def businessesSearch(
+      filters: {},
+      limit: 10,
+      include_total: false,
+      cursor: nil,
+      fields: nil,
+      async_request: false,
+      ui: false,
+      webhook: nil
+    )
+      payload = {
+        filters: (filters || {}),
+        limit: limit,
+        include_total: include_total,
+        cursor: cursor,
+        fields: fields ? Array(fields) : nil,
+        async: async_request,
+        ui: ui,
+        webhook: webhook
+      }.compact
+
+      postAPIRequest('/businesses', payload)
+    end
+
+    def businessesIterSearch(filters: {}, limit: 10, fields: nil, include_total: false)
+      cursor = nil
+      all_items = []
+
+      loop do
+        page = businessesSearch(
+          filters: filters,
+          limit: limit,
+          include_total: include_total,
+          cursor: cursor,
+          fields: fields,
+          async_request: false
+        )
+
+        items = page.is_a?(Hash) ? (page['items'] || []) : []
+        break if !items.is_a?(Array) || items.empty?
+
+        all_items.concat(items)
+
+        has_more = !!(page['has_more'])
+        next_cursor = page['next_cursor']
+        break if !has_more || next_cursor.nil? || next_cursor.to_s.strip.empty?
+
+        cursor = next_cursor.to_s
+      end
+
+      all_items
+    end
+
+    def businessesGet(business_id, fields: nil, async_request: false, ui: false, webhook: nil)
+      raise ArgumentError, 'business_id is required' if business_id.nil? || business_id.to_s.strip.empty?
+
+      fields_param =
+        if fields.is_a?(Array)
+          fields.map(&:to_s).join(',')
+        else
+          fields
+        end
+
+      response = self.class.get("/businesses/#{CGI.escape(business_id.to_s)}", query: {
+        fields: fields_param,
+        async: async_request,
+        ui: ui,
+        webhook: webhook
+      }.compact).parsed_response
+      response.is_a?(Hash) && response.key?('data') ? response['data'] : response
     end
   end
 end
