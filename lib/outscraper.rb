@@ -414,7 +414,8 @@ module Outscraper
       fields: nil,
       async_request: false,
       ui: false,
-      webhook: nil
+      webhook: nil,
+      query: nil
     )
       payload = {
         filters: (filters || {}),
@@ -422,6 +423,7 @@ module Outscraper
         include_total: include_total,
         cursor: cursor,
         fields: fields ? Array(fields) : nil,
+        query: query,
         async: async_request,
         ui: ui,
         webhook: webhook
