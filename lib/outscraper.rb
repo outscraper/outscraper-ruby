@@ -412,27 +412,62 @@ module Outscraper
       include_total: false,
       cursor: nil,
       fields: nil,
+      enrichments: nil,
+      contacts_per_company: nil,
+      emails_per_contact: nil,
       async_request: false,
       ui: false,
       webhook: nil,
       query: nil
     )
+      if contacts_per_company && contacts_per_company < 1
+        raise ArgumentError, 'contacts_per_company must be >= 1'
+      end
+
+      if emails_per_contact && emails_per_contact < 1
+        raise ArgumentError, 'emails_per_contact must be >= 1'
+      end
+
+      enrichments_payload =
+        if enrichments.nil?
+          []
+        else
+          Array(enrichments)
+        end
+
       payload = {
         filters: (filters || {}),
         limit: limit,
         include_total: include_total,
         cursor: cursor,
         fields: fields ? Array(fields) : nil,
+        enrichments: enrichments_payload.empty? ? nil : enrichments_payload,
         query: query,
         async: async_request,
         ui: ui,
         webhook: webhook
       }.compact
 
+      if enrichments_payload.include?('contacts_n_leads')
+        payload[:contacts_per_company] = contacts_per_company || 3
+        payload[:emails_per_contact] = emails_per_contact || 1
+      elsif !contacts_per_company.nil? || !emails_per_contact.nil?
+        raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
+      end
+
       postAPIRequest('/businesses', payload)
     end
 
-    def businessesIterSearch(filters: {}, limit: 10, fields: nil, include_total: false)
+    def businessesIterSearch(
+      filters: {},
+      limit: 10,
+      fields: nil,
+      include_total: false,
+      enrichments: nil,
+      contacts_per_company: nil,
+      emails_per_contact: nil,
+      query: nil
+    )
       cursor = nil
       all_items = []
 
@@ -443,6 +478,10 @@ module Outscraper
           include_total: include_total,
           cursor: cursor,
           fields: fields,
+          enrichments: enrichments,
+          contacts_per_company: contacts_per_company,
+          emails_per_contact: emails_per_contact,
+          query: query,
           async_request: false
         )
 
