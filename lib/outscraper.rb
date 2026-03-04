@@ -378,7 +378,7 @@ module Outscraper
         async: async_request
       }).parsed_response['data']
     end
-    
+
     def yellowpages_search(query, location: 'New York, NY', limit: 100, region: nil, enrichment: [], fields: '', async_request: false, ui: nil, webhook: nil)
       enrichment_array = enrichment.is_a?(Array) ? enrichment : [enrichment]
       response = self.class.get('/yellowpages-search', query: {
@@ -428,34 +428,64 @@ module Outscraper
         raise ArgumentError, 'emails_per_contact must be >= 1'
       end
 
-      enrichments_payload =
-        if enrichments.nil?
-          []
-        else
-          Array(enrichments)
-        end
+enrichments_normalized = nil
 
-      payload = {
-        filters: (filters || {}),
-        limit: limit,
-        include_total: include_total,
-        cursor: cursor,
-        fields: fields ? Array(fields) : nil,
-        enrichments: enrichments_payload.empty? ? nil : enrichments_payload,
-        query: query,
-        async: async_request,
-        ui: ui,
-        webhook: webhook
-      }.compact
+if enrichments.is_a?(Hash)
+  enrichments_normalized = enrichments
+elsif enrichments.is_a?(Array)
+  enrichments_normalized = enrichments
+elsif enrichments.is_a?(String) || enrichments.is_a?(Symbol)
+  enrichments_normalized = enrichments.to_s
+elsif !enrichments.nil?
+  enrichments_normalized = Array(enrichments)
+end
 
-      if enrichments_payload.include?('contacts_n_leads')
-        payload[:contacts_per_company] = contacts_per_company || 3
-        payload[:emails_per_contact] = emails_per_contact || 1
-      elsif !contacts_per_company.nil? || !emails_per_contact.nil?
-        raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
-      end
+if !contacts_per_company.nil? || !emails_per_contact.nil?
+  cpp = contacts_per_company || 3
+  epc = emails_per_contact || 1
 
-      postAPIRequest('/businesses', payload)
+  case enrichments_normalized
+  when nil
+    enrichments_normalized = { 'contacts_n_leads' => { 'contacts_per_company' => cpp, 'emails_per_contact' => epc } }
+  when Hash
+    enrichments_normalized['contacts_n_leads'] ||= {}
+    enrichments_normalized['contacts_n_leads']['contacts_per_company'] = cpp
+    enrichments_normalized['contacts_n_leads']['emails_per_contact'] = epc
+  when Array
+    unless enrichments_normalized.map(&:to_s).include?('contacts_n_leads')
+      raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
+    end
+    # Expand array to object so we can include options
+    expanded = {}
+    enrichments_normalized.each { |name| expanded[name.to_s] = {} }
+    expanded['contacts_n_leads']['contacts_per_company'] = cpp
+    expanded['contacts_n_leads']['emails_per_contact'] = epc
+    enrichments_normalized = expanded
+  when String
+    unless enrichments_normalized == 'contacts_n_leads'
+      raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
+    end
+    enrichments_normalized = { 'contacts_n_leads' => { 'contacts_per_company' => cpp, 'emails_per_contact' => epc } }
+  else
+    raise ArgumentError, 'Invalid enrichments type'
+  end
+end
+
+payload = {
+  filters: (filters || {}),
+  limit: limit,
+  include_total: include_total,
+  cursor: cursor,
+  fields: fields ? Array(fields) : nil,
+  enrichments: enrichments_normalized,
+  query: query,
+  async: async_request,
+  ui: ui,
+  webhook: webhook
+}.compact
+
+postAPIRequest('/businesses', payload)
+
     end
 
     def businessesIterSearch(
