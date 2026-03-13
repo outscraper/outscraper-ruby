@@ -378,7 +378,7 @@ module Outscraper
         async: async_request
       }).parsed_response['data']
     end
-    
+
     def yellowpages_search(query, location: 'New York, NY', limit: 100, region: nil, enrichment: [], fields: '', async_request: false, ui: nil, webhook: nil)
       enrichment_array = enrichment.is_a?(Array) ? enrichment : [enrichment]
       response = self.class.get('/yellowpages-search', query: {
@@ -412,27 +412,92 @@ module Outscraper
       include_total: false,
       cursor: nil,
       fields: nil,
+      enrichments: nil,
+      contacts_per_company: nil,
+      emails_per_contact: nil,
       async_request: false,
       ui: false,
       webhook: nil,
       query: nil
     )
-      payload = {
-        filters: (filters || {}),
-        limit: limit,
-        include_total: include_total,
-        cursor: cursor,
-        fields: fields ? Array(fields) : nil,
-        query: query,
-        async: async_request,
-        ui: ui,
-        webhook: webhook
-      }.compact
+      if contacts_per_company && contacts_per_company < 1
+        raise ArgumentError, 'contacts_per_company must be >= 1'
+      end
 
-      postAPIRequest('/businesses', payload)
+      if emails_per_contact && emails_per_contact < 1
+        raise ArgumentError, 'emails_per_contact must be >= 1'
+      end
+
+enrichments_normalized = nil
+
+if enrichments.is_a?(Hash)
+  enrichments_normalized = enrichments
+elsif enrichments.is_a?(Array)
+  enrichments_normalized = enrichments
+elsif enrichments.is_a?(String) || enrichments.is_a?(Symbol)
+  enrichments_normalized = enrichments.to_s
+elsif !enrichments.nil?
+  enrichments_normalized = Array(enrichments)
+end
+
+if !contacts_per_company.nil? || !emails_per_contact.nil?
+  cpp = contacts_per_company || 3
+  epc = emails_per_contact || 1
+
+  case enrichments_normalized
+  when nil
+    enrichments_normalized = { 'contacts_n_leads' => { 'contacts_per_company' => cpp, 'emails_per_contact' => epc } }
+  when Hash
+    enrichments_normalized['contacts_n_leads'] ||= {}
+    enrichments_normalized['contacts_n_leads']['contacts_per_company'] = cpp
+    enrichments_normalized['contacts_n_leads']['emails_per_contact'] = epc
+  when Array
+    unless enrichments_normalized.map(&:to_s).include?('contacts_n_leads')
+      raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
+    end
+    # Expand array to object so we can include options
+    expanded = {}
+    enrichments_normalized.each { |name| expanded[name.to_s] = {} }
+    expanded['contacts_n_leads']['contacts_per_company'] = cpp
+    expanded['contacts_n_leads']['emails_per_contact'] = epc
+    enrichments_normalized = expanded
+  when String
+    unless enrichments_normalized == 'contacts_n_leads'
+      raise ArgumentError, 'contacts_per_company and emails_per_contact require enrichments to include "contacts_n_leads"'
+    end
+    enrichments_normalized = { 'contacts_n_leads' => { 'contacts_per_company' => cpp, 'emails_per_contact' => epc } }
+  else
+    raise ArgumentError, 'Invalid enrichments type'
+  end
+end
+
+payload = {
+  filters: (filters || {}),
+  limit: limit,
+  include_total: include_total,
+  cursor: cursor,
+  fields: fields ? Array(fields) : nil,
+  enrichments: enrichments_normalized,
+  query: query,
+  async: async_request,
+  ui: ui,
+  webhook: webhook
+}.compact
+
+postAPIRequest('/businesses', payload)
+
     end
 
-    def businessesIterSearch(filters: {}, limit: 10, fields: nil, include_total: false)
+    def businessesIterSearch(
+      filters: {},
+      limit: 10,
+      fields: nil,
+      include_total: false,
+      enrichments: nil,
+      contacts_per_company: nil,
+      emails_per_contact: nil,
+      query: nil
+    )
       cursor = nil
       all_items = []
 
@@ -443,6 +508,10 @@ module Outscraper
           include_total: include_total,
           cursor: cursor,
           fields: fields,
+          enrichments: enrichments,
+          contacts_per_company: contacts_per_company,
+          emails_per_contact: emails_per_contact,
+          query: query,
           async_request: false
         )
 
