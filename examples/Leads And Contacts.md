@@ -28,5 +28,5 @@ client = Outscraper::Client.new('SECRET_API_KEY')
 
 ```ruby
 # Search contacts from a website:
-results = client.contacts_and_leads('outscraper.com')
+results = client.leads_and_contacts('outscraper.com')
 ```
