@@ -149,7 +149,7 @@ module Outscraper
       ui: false,
       webhook: nil
     )
-      response = self.class.get('/contacts-and-leads', query: {
+      response = self.class.get('/leads-and-contacts', query: {
         query: query,
         fields: fields ? Array(fields) : nil,
         async: ui ? true : async_request,
