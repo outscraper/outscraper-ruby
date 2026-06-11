@@ -1,6 +1,6 @@
 # Emails And Contacts Scraper With Python
 
-Allows finding email addresses, social links, and phones from domains via [Outscraper API](https://app.outscraper.cloud/api-docs#tag/Email-Related/paths/~1contacts-and-leads/get).
+Allows finding email addresses, social links, and phones from domains via [Outscraper API](https://app.outscraper.cloud/api-docs#tag/Email-Related/paths/~1leads-and-contacts/get).
 
 ## Installation
 
@@ -28,5 +28,5 @@ client = Outscraper::Client.new('SECRET_API_KEY')
 
 ```ruby
 # Search contacts from a website:
-results = client.contacts_and_leads('outscraper.com')
+results = client.leads_and_contacts('outscraper.com')
 ```

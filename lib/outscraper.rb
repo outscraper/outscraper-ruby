@@ -137,7 +137,7 @@ module Outscraper
       }).parsed_response['data']
     end
 
-    def contacts_and_leads(
+    def leads_and_contacts(
       query,
       fields: nil,
       async_request: true,
@@ -149,7 +149,7 @@ module Outscraper
       ui: false,
       webhook: nil
     )
-      response = self.class.get('/contacts-and-leads', query: {
+      response = self.class.get('/leads-and-contacts', query: {
         query: query,
         fields: fields ? Array(fields) : nil,
         async: ui ? true : async_request,
@@ -161,6 +161,10 @@ module Outscraper
         ui: ui,
         webhook: webhook
       }).parsed_response['data']
+    end
+
+    def contacts_and_leads(*args, **kwargs)
+      leads_and_contacts(*args, **kwargs)
     end
 
     def emails_and_contacts(query)
