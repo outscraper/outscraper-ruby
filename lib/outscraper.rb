@@ -225,10 +225,11 @@ module Outscraper
       }).parsed_response['data']
     end
 
-    def tripadvisor_reviews(query, limit: 100, async_request: false)
+    def tripadvisor_reviews(query, limit: 100, async_request: false, language: 'default')
       response = self.class.get('/tripadvisor-reviews', query: {
         query: query,
         limit: limit,
+        language: language,
         async: async_request
       }).parsed_response['data']
     end
